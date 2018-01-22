@@ -12,20 +12,41 @@ app.use(bodyParser.json());
 
 const port = process.env.PORT || 3000;
 
-app.get('/', function (req, res) {
-    res.json({ message: 'hooray! welcome to our api!' + moment().format() });
+app.get('/', async (req, res, next) => {
+    Promise.resolve()
+        .then(() =>
+            res.json({ message: 'hooray! welcome to our api!' + moment().format() })
+        )
+        .catch((err) =>
+            next(err)
+        )
+});
+
+// Get the new key from amiral when satellite instance
+app.get('/key', async (req, res, next) => {
+    const newKey = await res.params.id
+    Promise.resolve()
+        .then(() =>
+            db.run("Insert into keys (id) values (?)", newKey)
+        )
+        .catch((err) =>
+            next(err)
+        )
 });
 
 
 
 app.get('/keys', async (req, res, next) => {
-    try {
-        const keys = await db.all('SELECT * FROM keys'); // <=
-        res.json(keys);
-    } catch (err) {
-        next(err);
-    }
+    const keys = await db.all('SELECT * FROM keys'); // <=
+    Promise.resolve()
+        .then(() =>
+            res.send(keys)
+        )
+        .catch((err) =>
+            next(err)
+        )
 });
+
 
 app.get('/key/:id', async (req, res, next) => {
     const currKey = await db.get('SELECT * FROM keys WHERE id =' + req.params.id)
@@ -53,7 +74,7 @@ app.put('/key', async (req, res, next) => {
 
 Promise.resolve()
     // First, try to open the database
-    .then(() => db.open('./satellite', { Promise }))
+    .then(() => db.open('./satellite.db', { Promise }))
     // Display error message if something went wrong
     .catch((err) => console.error(err.stack))
     // Finally, launch the Node.js app
