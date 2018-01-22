@@ -27,7 +27,7 @@ app.get('/keys', async (req, res, next) => {
 
 app.get('/key/:id', async (req, res, next) => {
     try {
-        const currKey = await db.get('SELECT' + req.params.id + ' FROM keys ORDER BY date DESC')
+        const currKey = await db.get('SELECT * FROM keys WHERE id =' + req.params.id)
         res.send(currKey);
     } catch (err) {
         next(err)
