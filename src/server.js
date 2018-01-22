@@ -16,6 +16,8 @@ app.get('/', function (req, res) {
     res.json({ message: 'hooray! welcome to our api!' + moment().format() });
 });
 
+
+
 app.get('/keys', async (req, res, next) => {
     try {
         const keys = await db.all('SELECT * FROM keys'); // <=
@@ -26,22 +28,26 @@ app.get('/keys', async (req, res, next) => {
 });
 
 app.get('/key/:id', async (req, res, next) => {
-    try {
-        const currKey = await db.get('SELECT * FROM keys WHERE id =' + req.params.id)
-        res.send(currKey);
-    } catch (err) {
-        next(err)
-    }
+    const currKey = await db.get('SELECT * FROM keys WHERE id =' + req.params.id)
+    Promise.resolve()
+        .then(() =>
+            res.send(currKey)
+        )
+        .catch((err) =>
+            next(err)
+        )
 });
 
 app.put('/key', async (req, res, next) => {
-    const lastKey = await req.body.id
+    const currKey = await db.get('SELECT MAX(date) FROM keys')
+    currKey = req.body.id
+    const lastKey = await res.body.id
     Promise.resolve()
         .then(() =>
-            db.run('INSERT INTO keys VALUES (' + lastKey + ')')
+            db.run("Insert into keys (id) values (?)", lastKey)
         )
         .catch((err) =>
-            console.error(err.stack)
+            next(err)
         )
 });
 
