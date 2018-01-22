@@ -19,7 +19,7 @@ app.get('/', function (req, res) {
 app.get('/keys', async (req, res, next) => {
     try {
         const keys = await db.all('SELECT * FROM keys'); // <=
-        res.send(keys);
+        res.json(keys);
     } catch (err) {
         next(err);
     }
