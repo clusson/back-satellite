@@ -16,9 +16,9 @@ app.get('/', function (req, res) {
     res.json({ message: 'hooray! welcome to our api!' + moment().format() });
 });
 
-app.get('/key', async (req, res, next) => {
+app.get('/keys', async (req, res, next) => {
     try {
-        const keys = await db.all('SELECT * FROM Key LIMIT 10'); // <=
+        const keys = await db.all('SELECT * FROM keys'); // <=
         res.send(keys);
     } catch (err) {
         next(err);
@@ -27,7 +27,7 @@ app.get('/key', async (req, res, next) => {
 
 app.get('/key/:id', async (req, res, next) => {
     try {
-        const currKey = await db.get('SELECT id FROM keys ORDER BY date DESC')
+        const currKey = await db.get('SELECT' + req.params.id + ' FROM keys ORDER BY date DESC')
         res.send(currKey);
     } catch (err) {
         next(err)
