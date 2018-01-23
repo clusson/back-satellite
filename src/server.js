@@ -11,6 +11,19 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 const port = process.env.PORT || 3000;
+const amiralPort = 4200;
+const currKey = db.get('SELECT MAX(date) FROM keys');
+
+app.listen(amiralPort, async (req, res, next) => {
+    const rule = new schedule.RecurrenceRule();
+    rule.minute = new schedule.Range(0, 59, 5);
+
+    schedule.scheduleJob(rule, function () {
+        // call the amiral back every 5 min with lastKey
+    })
+
+});
+
 
 app.get('/', async (req, res, next) => {
     Promise.resolve()
@@ -33,8 +46,6 @@ app.get('/key', async (req, res, next) => {
             next(err)
         )
 });
-
-
 
 app.get('/keys', async (req, res, next) => {
     const keys = await db.all('SELECT * FROM keys'); // <=
