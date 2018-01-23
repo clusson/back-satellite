@@ -20,6 +20,17 @@ app.listen(amiralPort, async (req, res, next) => {
 
     schedule.scheduleJob(rule, function () {
         // call the amiral back every 5 min with lastKey
+        app.put('/key', async (req, res, next) => {
+            currKey = req.body.id
+            const lastKey = await res.body.id
+            Promise.resolve()
+                .then(() =>
+                    db.run("Insert into keys (id) values (?)", lastKey)
+                )
+                .catch((err) =>
+                    next(err)
+                )
+        });
     })
 
 });
@@ -70,18 +81,7 @@ app.get('/key/:id', async (req, res, next) => {
         )
 });
 
-app.put('/key', async (req, res, next) => {
-    const currKey = await db.get('SELECT MAX(date) FROM keys')
-    currKey = req.body.id
-    const lastKey = await res.body.id
-    Promise.resolve()
-        .then(() =>
-            db.run("Insert into keys (id) values (?)", lastKey)
-        )
-        .catch((err) =>
-            next(err)
-        )
-});
+
 
 Promise.resolve()
     // First, try to open the database
